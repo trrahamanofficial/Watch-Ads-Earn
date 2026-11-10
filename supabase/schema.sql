@@ -73,3 +73,27 @@ end;
 $$;
 revoke all on function public.redeem_reward(uuid) from public, anon;
 grant execute on function public.redeem_reward(uuid) to authenticated;
+
+
+-- Referral attribution. Reward credit remains disabled until verified qualification and anti-abuse rules are live.
+alter table public.profiles add column if not exists referral_code text;
+create unique index if not exists profiles_referral_code_unique on public.profiles(referral_code) where referral_code is not null;
+update public.profiles set referral_code=upper(substr(encode(gen_random_bytes(8),'hex'),1,10)) where referral_code is null;
+create or replace function public.capture_new_user_referral()
+returns trigger language plpgsql security definer set search_path=''
+as $$
+declare v_code text := upper(trim(coalesce(new.raw_user_meta_data->>'referral_code',''))); v_referrer uuid;
+begin
+ update public.profiles set referral_code=coalesce(referral_code,upper(substr(encode(gen_random_bytes(8),'hex'),1,10))) where id=new.id;
+ if v_code<>'' then
+  select id into v_referrer from public.profiles where referral_code=v_code and id<>new.id limit 1;
+  if v_referrer is not null then
+   insert into public.referrals(referrer_id,referred_id,status) values(v_referrer,new.id,'pending') on conflict(referred_id) do nothing;
+  end if;
+ end if;
+ return new;
+end;
+$$;
+revoke all on function public.capture_new_user_referral() from public,anon,authenticated;
+drop trigger if exists on_auth_user_referral on auth.users;
+create trigger on_auth_user_referral after insert on auth.users for each row execute function public.capture_new_user_referral();
