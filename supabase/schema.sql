@@ -143,3 +143,17 @@ end;
 $$;
 revoke all on function public.admin_create_reward(text,text,bigint,text,boolean) from public,anon;
 grant execute on function public.admin_create_reward(text,text,bigint,text,boolean) to authenticated;
+
+
+-- Admin dashboard read policies. These grant read-only access only after the
+-- database-side role check; normal users continue to see only their own rows.
+drop policy if exists "admin read all wallets" on public.wallets;
+create policy "admin read all wallets" on public.wallets for select to authenticated using(public.is_current_user_admin());
+drop policy if exists "admin read all withdrawals" on public.withdrawal_requests;
+create policy "admin read all withdrawals" on public.withdrawal_requests for select to authenticated using(public.is_current_user_admin());
+drop policy if exists "admin read all redemptions" on public.redemptions;
+create policy "admin read all redemptions" on public.redemptions for select to authenticated using(public.is_current_user_admin());
+drop policy if exists "admin read all referrals" on public.referrals;
+create policy "admin read all referrals" on public.referrals for select to authenticated using(public.is_current_user_admin());
+drop policy if exists "admin read all rewards" on public.reward_catalog;
+create policy "admin read all rewards" on public.reward_catalog for select to authenticated using(public.is_current_user_admin());
