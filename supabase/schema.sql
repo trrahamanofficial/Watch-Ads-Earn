@@ -216,3 +216,14 @@ end;
 $$;
 revoke all on function public.admin_set_reward_active(uuid,boolean) from public,anon;
 grant execute on function public.admin_set_reward_active(uuid,boolean) to authenticated;
+
+
+-- Defense in depth: clients may read only rows allowed by RLS; all writes
+-- to balances, ledgers, withdrawals, redemptions and rewards go through
+-- database functions with explicit authorization checks.
+revoke insert, update, delete, truncate, references, trigger on
+ public.profiles,public.wallets,public.reward_ledger,public.ad_sessions,
+ public.withdrawal_requests,public.referrals,public.reward_catalog,
+ public.redemptions,public.provider_settings,public.reward_code_inventory,
+ public.provider_callback_events
+from anon, authenticated;
