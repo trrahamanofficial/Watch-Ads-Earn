@@ -201,3 +201,18 @@ end;
 $$;
 revoke all on function public.process_verified_ad_callback(text,text,uuid,text,bigint) from public,anon,authenticated;
 grant execute on function public.process_verified_ad_callback(text,text,uuid,text,bigint) to service_role;
+
+
+-- Admin-only reward publication toggle. No direct client table UPDATE permission.
+create or replace function public.admin_set_reward_active(p_reward_id uuid,p_active boolean)
+returns void language plpgsql security definer set search_path=''
+as $$
+begin
+ if not public.is_current_user_admin() then raise exception 'Admin access required'; end if;
+ if p_reward_id is null or p_active is null then raise exception 'Reward and status are required'; end if;
+ update public.reward_catalog set active=p_active where id=p_reward_id;
+ if not found then raise exception 'Reward not found'; end if;
+end;
+$$;
+revoke all on function public.admin_set_reward_active(uuid,boolean) from public,anon;
+grant execute on function public.admin_set_reward_active(uuid,boolean) to authenticated;
