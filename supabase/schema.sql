@@ -157,3 +157,47 @@ drop policy if exists "admin read all referrals" on public.referrals;
 create policy "admin read all referrals" on public.referrals for select to authenticated using(public.is_current_user_admin());
 drop policy if exists "admin read all rewards" on public.reward_catalog;
 create policy "admin read all rewards" on public.reward_catalog for select to authenticated using(public.is_current_user_admin());
+
+
+-- Idempotent verified-ad callback ledger. Keep this table inaccessible to clients.
+create table if not exists public.provider_callback_events (
+  id uuid primary key default gen_random_uuid(),
+  provider text not null,
+  provider_event_id text not null,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  offer_id text not null,
+  points bigint not null check(points between 1 and 10000),
+  status text not null check(status in ('credited')),
+  received_at timestamptz not null default now(),
+  unique(provider, provider_event_id)
+);
+alter table public.provider_callback_events enable row level security;
+revoke all on public.provider_callback_events from anon, authenticated;
+grant select, insert on public.provider_callback_events to service_role;
+
+create or replace function public.process_verified_ad_callback(
+  p_provider text, p_event_id text, p_user_id uuid, p_offer_id text, p_points bigint
+) returns text
+language plpgsql security invoker set search_path=''
+as $$
+declare v_event_id uuid;
+begin
+ if p_provider is null or length(trim(p_provider)) not between 2 and 60 then raise exception 'Invalid provider'; end if;
+ if p_event_id is null or length(trim(p_event_id)) not between 1 and 180 then raise exception 'Invalid event id'; end if;
+ if p_user_id is null or p_offer_id is null or length(trim(p_offer_id)) not between 1 and 180 then raise exception 'Invalid callback data'; end if;
+ if p_points is null or p_points not between 1 and 10000 then raise exception 'Invalid points'; end if;
+ insert into public.provider_callback_events(provider,provider_event_id,user_id,offer_id,points,status)
+ values(trim(p_provider),trim(p_event_id),p_user_id,trim(p_offer_id),p_points,'credited')
+ on conflict(provider,provider_event_id) do nothing returning id into v_event_id;
+ if v_event_id is null then return 'duplicate'; end if;
+ update public.wallets set balance=balance+p_points,lifetime_earned=lifetime_earned+p_points,updated_at=now()
+ where user_id=p_user_id;
+ if not found then raise exception 'Wallet not found'; end if;
+ insert into public.reward_ledger(user_id,event_type,points,reference,description)
+ values(p_user_id,'earn',p_points,'ad-provider:'||trim(p_provider)||':'||trim(p_event_id),
+ 'Verified offer completion: '||trim(p_offer_id));
+ return 'credited';
+end;
+$$;
+revoke all on function public.process_verified_ad_callback(text,text,uuid,text,bigint) from public,anon,authenticated;
+grant execute on function public.process_verified_ad_callback(text,text,uuid,text,bigint) to service_role;
