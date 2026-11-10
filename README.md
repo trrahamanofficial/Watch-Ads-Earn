@@ -17,3 +17,21 @@ Mobile-first React + Vite + Supabase rewards dashboard. Black, orange and gold t
 
 ## Before real launch
 Obtain written approval from an ad/offer provider for incentivized traffic and verify India payout support. Implement signed callback verification, idempotency and fraud checks. Configure payout/redeem inventory, privacy policy, terms, support and compliance. Some services may cost money. This starter is not a live ad network or a promise of earnings.
+
+
+## Verified ad callback (integration scaffold)
+
+The repository contains a fail-closed Supabase Edge Function at
+`supabase/functions/ad-provider-callback/index.ts`. It expects an HMAC-SHA256
+signature in `x-provider-signature: sha256=<hex>` over the exact raw request
+body and a normalized completion payload. It uses a unique provider/event key
+and a single database transaction to prevent duplicate point credits.
+
+**This is not yet connected to an ad network and must not be enabled yet.**
+Each provider has its own signature scheme, event fields, user-sub-ID macros,
+postback retry rules, and incentive policy. Before deployment, obtain written
+approval for incentivized traffic, verify India support, and adapt the handler
+to that provider's official documentation. Only then set
+`AD_PROVIDER_NAME` and `AD_PROVIDER_WEBHOOK_SECRET` as Edge Function secrets.
+Never put a secret in Git or the browser. Do not use a provider that cannot
+cryptographically authenticate completion callbacks.
