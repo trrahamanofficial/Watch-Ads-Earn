@@ -23,3 +23,53 @@ grant select on public.profiles,public.wallets,public.reward_ledger,public.ad_se
 -- No client insert/update/delete policies on points, ledger, ad events or payouts. Server-side signed provider callbacks only.
 -- Trigger functions are invoked by PostgreSQL triggers, not directly by client roles.
 revoke all on function public.handle_new_user() from public, anon, authenticated;
+
+
+-- Redeem-code inventory: codes are never directly readable through the Data API.
+alter table public.redemptions add column if not exists delivered_code text;
+create table if not exists public.reward_code_inventory (
+ id uuid primary key default gen_random_uuid(),
+ reward_id uuid not null references public.reward_catalog(id) on delete cascade,
+ code_value text not null,
+ claimed_by uuid references auth.users(id) on delete set null,
+ claimed_at timestamptz,
+ created_at timestamptz not null default now(),
+ unique(reward_id,code_value)
+);
+alter table public.reward_code_inventory enable row level security;
+revoke all on public.reward_code_inventory from anon, authenticated;
+create or replace function public.admin_add_reward_code(p_reward_id uuid,p_code text)
+returns void language plpgsql security definer set search_path=''
+as $$
+declare v_code text := trim(coalesce(p_code,''));
+begin
+ if not public.is_current_user_admin() then raise exception 'Admin access required'; end if;
+ if length(v_code)<4 or length(v_code)>160 then raise exception 'Code must be 4 to 160 characters'; end if;
+ if not exists(select 1 from public.reward_catalog where id=p_reward_id and reward_type='redeem_code') then raise exception 'Select an existing redeem-code reward'; end if;
+ insert into public.reward_code_inventory(reward_id,code_value) values(p_reward_id,v_code);
+end;
+$$;
+revoke all on function public.admin_add_reward_code(uuid,text) from public, anon;
+grant execute on function public.admin_add_reward_code(uuid,text) to authenticated;
+create or replace function public.redeem_reward(p_reward_id uuid)
+returns table(redemption_id uuid, delivered_code text, points_spent bigint)
+language plpgsql security definer set search_path=''
+as $$
+declare v_user uuid := auth.uid(); v_reward public.reward_catalog%rowtype; v_code_row public.reward_code_inventory%rowtype; v_redemption uuid;
+begin
+ if v_user is null then raise exception 'Please sign in'; end if;
+ select * into v_reward from public.reward_catalog where id=p_reward_id and active=true for share;
+ if not found then raise exception 'Reward is unavailable'; end if;
+ if v_reward.reward_type <> 'redeem_code' then raise exception 'Use the wallet withdrawal page for UPI rewards'; end if;
+ select * into v_code_row from public.reward_code_inventory where reward_id=p_reward_id and claimed_by is null order by created_at for update skip locked limit 1;
+ if not found then raise exception 'This reward is temporarily out of stock'; end if;
+ update public.wallets set balance=balance-v_reward.points_cost,updated_at=now() where user_id=v_user and balance>=v_reward.points_cost;
+ if not found then raise exception 'Insufficient points balance'; end if;
+ update public.reward_code_inventory set claimed_by=v_user,claimed_at=now() where id=v_code_row.id;
+ insert into public.redemptions(user_id,reward_id,points_spent,status,delivered_code) values(v_user,p_reward_id,v_reward.points_cost,'fulfilled',v_code_row.code_value) returning id into v_redemption;
+ insert into public.reward_ledger(user_id,event_type,points,reference,description) values(v_user,'redeem',-v_reward.points_cost,'reward-redemption:'||v_redemption::text,'Redeemed reward: '||v_reward.title);
+ return query select v_redemption,v_code_row.code_value,v_reward.points_cost;
+end;
+$$;
+revoke all on function public.redeem_reward(uuid) from public, anon;
+grant execute on function public.redeem_reward(uuid) to authenticated;
