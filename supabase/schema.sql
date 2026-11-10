@@ -21,3 +21,5 @@ drop policy if exists "catalog active read" on public.reward_catalog;create poli
 drop policy if exists "redemptions own read" on public.redemptions;create policy "redemptions own read" on public.redemptions for select to authenticated using((select auth.uid())=user_id);
 grant select on public.profiles,public.wallets,public.reward_ledger,public.ad_sessions,public.withdrawal_requests,public.referrals,public.reward_catalog,public.redemptions to authenticated;grant usage on schema public to authenticated;
 -- No client insert/update/delete policies on points, ledger, ad events or payouts. Server-side signed provider callbacks only.
+-- Trigger functions are invoked by PostgreSQL triggers, not directly by client roles.
+revoke all on function public.handle_new_user() from public, anon, authenticated;
