@@ -97,3 +97,49 @@ $$;
 revoke all on function public.capture_new_user_referral() from public,anon,authenticated;
 drop trigger if exists on_auth_user_referral on auth.users;
 create trigger on_auth_user_referral after insert on auth.users for each row execute function public.capture_new_user_referral();
+
+
+-- Referral attribution and secure admin reward creation.
+alter table public.profiles add column if not exists referral_code text;
+create unique index if not exists profiles_referral_code_unique on public.profiles(referral_code) where referral_code is not null;
+update public.profiles set referral_code=upper(substr(encode(gen_random_bytes(6),'hex'),1,10)) where referral_code is null;
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path=''
+as $$
+declare v_code text; v_referral text := upper(trim(coalesce(new.raw_user_meta_data->>'referral_code','')));
+begin
+ loop
+  v_code := upper(substr(encode(gen_random_bytes(6),'hex'),1,10));
+  exit when not exists(select 1 from public.profiles where referral_code=v_code);
+ end loop;
+ insert into public.profiles(id,display_name,referral_code)
+ values(new.id,coalesce(new.raw_user_meta_data->>'full_name',split_part(new.email,'@',1)),v_code)
+ on conflict(id) do nothing;
+ insert into public.wallets(user_id) values(new.id) on conflict(user_id) do nothing;
+ if v_referral<>'' then
+  insert into public.referrals(referrer_id,referred_id,status)
+  select p.id,new.id,'pending' from public.profiles p where p.referral_code=v_referral and p.id<>new.id
+  on conflict(referred_id) do nothing;
+ end if;
+ return new;
+end;
+$$;
+revoke all on function public.handle_new_user() from public,anon,authenticated;
+drop trigger if exists on_auth_user_referral on auth.users;
+create or replace function public.admin_create_reward(p_title text,p_description text,p_points_cost bigint,p_reward_type text,p_active boolean)
+returns uuid language plpgsql security definer set search_path=''
+as $$
+declare v_id uuid;
+begin
+ if not public.is_current_user_admin() then raise exception 'Admin access required'; end if;
+ if length(trim(coalesce(p_title,'')))<2 or length(p_title)>80 then raise exception 'Reward title must be 2 to 80 characters'; end if;
+ if p_points_cost is null or p_points_cost<1 then raise exception 'Points cost must be positive'; end if;
+ if p_reward_type not in ('upi','redeem_code') then raise exception 'Invalid reward type'; end if;
+ insert into public.reward_catalog(title,description,points_cost,reward_type,active)
+ values(trim(p_title),nullif(trim(coalesce(p_description,'')),''),p_points_cost,p_reward_type,coalesce(p_active,false))
+ returning id into v_id;
+ return v_id;
+end;
+$$;
+revoke all on function public.admin_create_reward(text,text,bigint,text,boolean) from public,anon;
+grant execute on function public.admin_create_reward(text,text,bigint,text,boolean) to authenticated;
