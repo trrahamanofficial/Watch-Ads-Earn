@@ -6,3 +6,30 @@
 .referral-code-box{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid #8a5a1b;border-radius:10px;background:#17130e}.referral-code-box strong{font-size:20px;letter-spacing:2px;color:#ffc15b}.referral-code-box button{border:1px solid #a66b19;background:#211b12;color:#ffc15b;border-radius:8px;padding:8px 12px}.referral-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}.referral-stats span{display:flex;flex-direction:column;gap:4px;padding:12px;border:1px solid #302a21;border-radius:9px}.referral-stats b{font-size:20px;color:#ffc15b}.referral-stats small{font-size:11px;color:#aaa}
 
 .admin-reward-actions{display:flex;align-items:center;gap:10px}.admin-reward-actions button{background:#211b12;border:1px solid #a66b19;color:#ffc15b;border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700;white-space:nowrap}.admin-reward-actions button:active{opacity:.7}
+
+
+/* Admin reward builder */
+.reward-builder{width:min(100%,980px);margin:28px auto 0;padding:22px;border:1px solid #3c3022;border-radius:18px;background:linear-gradient(145deg,#17130f,#111110);box-shadow:0 16px 45px #0003}
+.reward-builder-head{padding:4px 2px 20px;border-bottom:1px solid #30271e}
+.reward-builder-head h3{font:700 23px 'Space Grotesk';margin:8px 0 5px;color:#f7f4ef}
+.reward-builder-head p{margin:0;color:#99948c;font-size:12px;line-height:1.6}
+.reward-type-heading{display:flex;align-items:center;gap:12px;margin:22px 0 13px}
+.reward-type-heading>div{display:grid;gap:3px}
+.reward-type-heading b{font:700 16px 'Space Grotesk';color:#f4eee5}
+.reward-type-heading small{font-size:11px;color:#928b81}
+.reward-type-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:#f5a6231b;border:1px solid #80521f;color:#ffb642;font-size:22px;font-weight:800}
+.reward-type-icon.gift{font-size:18px}
+.reward-slot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.reward-slot-card{min-width:0;padding:16px;border:1px solid #302a22;border-radius:14px;background:#0e0e0d;display:flex;flex-direction:column;gap:8px}
+.reward-slot-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.reward-slot-top b{font:700 13px 'Space Grotesk';color:#f2e8d9}
+.reward-slot-top span{padding:4px 8px;border-radius:20px;background:#f5a62318;color:#f6b54b;font-size:9px;font-weight:800;letter-spacing:.1em}
+.reward-slot-card label{font-size:11px;font-weight:700;color:#bdb5aa;margin-top:4px}
+.reward-slot-card input:not([type=checkbox]){width:100%;min-width:0;padding:12px 13px;border-radius:9px;border:1px solid #38332c;background:#181715;color:#f7f4ef;font-size:13px;outline:none}
+.reward-slot-card input:focus{border-color:#c88731;box-shadow:0 0 0 3px #e99b2d18}
+.reward-slot-card input::placeholder{color:#716d67}
+.reward-slot-card .publish-toggle{display:flex;align-items:center;gap:9px;margin:7px 0 2px;font-size:11px;cursor:pointer}
+.reward-slot-card .publish-toggle input{width:17px;height:17px;accent-color:#ee9b28}
+.reward-save{width:100%;margin-top:5px;padding:11px 12px;font-size:12px}
+.redeem-heading{margin-top:27px}
+@media(max-width:600px){.reward-builder{padding:15px;margin-top:20px;border-radius:14px}.reward-builder-head h3{font-size:20px}.reward-slot-grid{grid-template-columns:1fr}.reward-slot-card{padding:14px}.reward-type-heading{margin-top:19px}}
