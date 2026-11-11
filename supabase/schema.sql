@@ -298,3 +298,19 @@ end;
 $$;
 revoke all on function public.admin_reward_stock_summary() from public,anon;
 grant execute on function public.admin_reward_stock_summary() to authenticated;
+
+
+-- 2026-11-11: remove duplicate admin read policies and index foreign keys.
+drop policy if exists "admin read all redemptions" on public.redemptions;
+drop policy if exists "admin read all referrals" on public.referrals;
+drop policy if exists "admin read all rewards" on public.reward_catalog;
+drop policy if exists "admin read all wallets" on public.wallets;
+drop policy if exists "admin read all withdrawals" on public.withdrawal_requests;
+create index if not exists ad_sessions_user_id_idx on public.ad_sessions(user_id);
+create index if not exists provider_callback_events_user_id_idx on public.provider_callback_events(user_id);
+create index if not exists redemptions_reward_id_idx on public.redemptions(reward_id);
+create index if not exists redemptions_user_id_idx on public.redemptions(user_id);
+create index if not exists referrals_referrer_id_idx on public.referrals(referrer_id);
+create index if not exists reward_code_inventory_claimed_by_idx on public.reward_code_inventory(claimed_by);
+create index if not exists reward_ledger_user_id_idx on public.reward_ledger(user_id);
+create index if not exists withdrawal_requests_user_id_idx on public.withdrawal_requests(user_id);
