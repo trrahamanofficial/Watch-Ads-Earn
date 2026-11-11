@@ -227,3 +227,53 @@ revoke insert, update, delete, truncate, references, trigger on
  public.redemptions,public.provider_settings,public.reward_code_inventory,
  public.provider_callback_events
 from anon, authenticated;
+
+
+-- 2026-11-11: persist withdrawal email for admin review and allow safe reward editing.
+create or replace function public.create_withdrawal_request(
+  p_points bigint, p_payout_method text, p_payout_details jsonb default '{}'::jsonb
+) returns uuid
+language plpgsql security definer set search_path=''
+as $$
+declare v_user uuid:=auth.uid(); v_id uuid; v_upi text; v_email text;
+begin
+  if v_user is null then raise exception 'Please sign in'; end if;
+  if p_points is null or p_points<1 then raise exception 'Invalid points amount'; end if;
+  if p_payout_method<>'upi' then raise exception 'Only UPI withdrawals are supported here'; end if;
+  v_email:=lower(trim(coalesce(p_payout_details->>'email','')));
+  if length(v_email)>254 or v_email !~ '^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$' then raise exception 'Enter a valid email address'; end if;
+  v_upi:=trim(coalesce(p_payout_details->>'upi_id',''));
+  if length(v_upi)<5 or length(v_upi)>100 or v_upi !~ '^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+$' then raise exception 'Enter a valid UPI ID'; end if;
+  update public.wallets set balance=balance-p_points,updated_at=now() where user_id=v_user and balance>=p_points;
+  if not found then raise exception 'Insufficient points balance'; end if;
+  insert into public.withdrawal_requests(user_id,points,payout_method,payout_details,status)
+  values(v_user,p_points,'upi',jsonb_build_object('email',v_email,'upi_id',v_upi),'pending') returning id into v_id;
+  insert into public.reward_ledger(user_id,event_type,points,reference,description)
+  values(v_user,'redeem',-p_points,'withdrawal:'||v_id::text,'Withdrawal request submitted');
+  return v_id;
+end;
+$$;
+revoke all on function public.create_withdrawal_request(bigint,text,jsonb) from public,anon;
+grant execute on function public.create_withdrawal_request(bigint,text,jsonb) to authenticated;
+
+create or replace function public.admin_update_reward(
+  p_reward_id uuid, p_title text, p_description text, p_points_cost bigint,
+  p_reward_type text, p_active boolean
+) returns void
+language plpgsql security definer set search_path=''
+as $$
+begin
+  if not public.is_current_user_admin() then raise exception 'Admin access required'; end if;
+  if p_reward_id is null then raise exception 'Reward id is required'; end if;
+  if length(trim(coalesce(p_title,'')))<2 or length(p_title)>80 then raise exception 'Reward title must be 2 to 80 characters'; end if;
+  if p_points_cost is null or p_points_cost<1 then raise exception 'Points cost must be positive'; end if;
+  if p_reward_type not in ('upi','redeem_code') then raise exception 'Invalid reward type'; end if;
+  update public.reward_catalog
+  set title=trim(p_title),description=nullif(trim(coalesce(p_description,'')),''),
+      points_cost=p_points_cost,reward_type=p_reward_type,active=coalesce(p_active,false)
+  where id=p_reward_id;
+  if not found then raise exception 'Reward not found'; end if;
+end;
+$$;
+revoke all on function public.admin_update_reward(uuid,text,text,bigint,text,boolean) from public,anon;
+grant execute on function public.admin_update_reward(uuid,text,text,bigint,text,boolean) to authenticated;
