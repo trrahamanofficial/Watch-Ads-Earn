@@ -33,3 +33,30 @@
 .reward-save{width:100%;margin-top:5px;padding:11px 12px;font-size:12px}
 .redeem-heading{margin-top:27px}
 @media(max-width:600px){.reward-builder{padding:15px;margin-top:20px;border-radius:14px}.reward-builder-head h3{font-size:20px}.reward-slot-grid{grid-template-columns:1fr}.reward-slot-card{padding:14px}.reward-type-heading{margin-top:19px}}
+
+
+/* Member reward cards and compact mobile forms */
+.data-list form,.member-reward-form form{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}
+.data-list form label,.member-reward-form form label{display:block;color:#c8c0b5;font-size:12px;font-weight:700;margin-top:5px}
+.data-list form input,.member-reward-form form input{display:block;width:100%;min-width:0;max-width:100%;padding:13px 14px;border:1px solid #38332c;border-radius:10px;background:#191816;color:#f7f4ef;font-size:14px;outline:none}
+.data-list form input:focus,.member-reward-form form input:focus{border-color:#c88731;box-shadow:0 0 0 3px #e99b2d18}
+.data-list form input::placeholder,.member-reward-form form input::placeholder{color:#77716a}
+.data-list form .primary,.member-reward-form form .primary{width:100%;margin-top:8px}
+.reward-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:min(100%,820px);margin:20px auto}
+.member-reward-card{min-width:0;padding:16px 13px;border:1px solid #393027;border-radius:15px;background:linear-gradient(145deg,#19140f,#111110);display:flex;flex-direction:column;align-items:flex-start;gap:8px;box-shadow:0 8px 24px #0002}
+.member-reward-icon{width:38px;height:38px;display:grid;place-items:center;border:1px solid #70481f;border-radius:12px;background:#f5a62318;color:#ffb642;font-size:21px;font-weight:800}
+.member-reward-kind{color:#e8a443;font-size:9px;font-weight:800;letter-spacing:.12em}
+.member-reward-card h3{font:700 15px/1.3 'Space Grotesk';margin:2px 0;color:#f7f4ef;overflow-wrap:anywhere}
+.member-reward-card p{font-size:11px;color:#a49c91;margin:0;line-height:1.5}
+.member-reward-action{width:100%;padding:11px 8px;margin-top:auto;font-size:12px;min-height:42px}
+.reward-empty{grid-column:1/-1;color:#99948c;text-align:center;padding:22px}
+.member-reward-form{width:min(100%,620px);margin:22px auto;padding:20px;border:1px solid #574020;border-radius:16px;background:linear-gradient(145deg,#1c160f,#111110);box-shadow:0 14px 38px #0004}
+.reward-form-heading{padding-bottom:13px;border-bottom:1px solid #34291e;margin-bottom:14px}
+.reward-form-heading h3{font:700 20px 'Space Grotesk';margin:7px 0 4px}
+.reward-form-heading p,.form-hint{font-size:12px;color:#a59b8e;line-height:1.6;margin:0}
+.member-reward-form .notice{overflow-wrap:anywhere}
+.issued-code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-top:12px;border:1px solid #75501f;border-radius:10px;background:#0e0e0d}
+.issued-code code{color:#ffc15b;font-size:14px;overflow-wrap:anywhere}
+.issued-code button,.text-button{border:1px solid #8b5c22;background:#21190f;color:#ffc15b;border-radius:8px;padding:9px 12px;font-size:11px;font-weight:800;flex-shrink:0}
+.text-button{margin-top:12px}
+@media(max-width:420px){.reward-choice-grid{gap:9px}.member-reward-card{padding:13px 10px;border-radius:12px}.member-reward-card h3{font-size:13px}.member-reward-card p{font-size:10px}.member-reward-action{font-size:11px;padding:10px 5px}.member-reward-form{padding:15px}.issued-code{align-items:flex-start;flex-direction:column}}
