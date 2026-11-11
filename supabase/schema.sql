@@ -78,13 +78,13 @@ grant execute on function public.redeem_reward(uuid) to authenticated;
 -- Referral attribution. Reward credit remains disabled until verified qualification and anti-abuse rules are live.
 alter table public.profiles add column if not exists referral_code text;
 create unique index if not exists profiles_referral_code_unique on public.profiles(referral_code) where referral_code is not null;
-update public.profiles set referral_code=upper(substr(encode(gen_random_bytes(8),'hex'),1,10)) where referral_code is null;
+update public.profiles set referral_code=upper(substr(encode(extensions.gen_random_bytes(8),'hex'),1,10)) where referral_code is null;
 create or replace function public.capture_new_user_referral()
 returns trigger language plpgsql security definer set search_path=''
 as $$
 declare v_code text := upper(trim(coalesce(new.raw_user_meta_data->>'referral_code',''))); v_referrer uuid;
 begin
- update public.profiles set referral_code=coalesce(referral_code,upper(substr(encode(gen_random_bytes(8),'hex'),1,10))) where id=new.id;
+ update public.profiles set referral_code=coalesce(referral_code,upper(substr(encode(extensions.gen_random_bytes(8),'hex'),1,10))) where id=new.id;
  if v_code<>'' then
   select id into v_referrer from public.profiles where referral_code=v_code and id<>new.id limit 1;
   if v_referrer is not null then
@@ -102,14 +102,14 @@ create trigger on_auth_user_referral after insert on auth.users for each row exe
 -- Referral attribution and secure admin reward creation.
 alter table public.profiles add column if not exists referral_code text;
 create unique index if not exists profiles_referral_code_unique on public.profiles(referral_code) where referral_code is not null;
-update public.profiles set referral_code=upper(substr(encode(gen_random_bytes(6),'hex'),1,10)) where referral_code is null;
+update public.profiles set referral_code=upper(substr(encode(extensions.gen_random_bytes(6),'hex'),1,10)) where referral_code is null;
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path=''
 as $$
 declare v_code text; v_referral text := upper(trim(coalesce(new.raw_user_meta_data->>'referral_code','')));
 begin
  loop
-  v_code := upper(substr(encode(gen_random_bytes(6),'hex'),1,10));
+  v_code := upper(substr(encode(extensions.gen_random_bytes(6),'hex'),1,10));
   exit when not exists(select 1 from public.profiles where referral_code=v_code);
  end loop;
  insert into public.profiles(id,display_name,referral_code)
