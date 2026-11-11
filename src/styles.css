@@ -32,7 +32,7 @@
 .reward-slot-card .publish-toggle input{width:17px;height:17px;accent-color:#ee9b28}
 .reward-save{width:100%;margin-top:5px;padding:11px 12px;font-size:12px}
 .redeem-heading{margin-top:27px}
-@media(max-width:600px){.reward-builder{padding:15px;margin-top:20px;border-radius:14px}.reward-builder-head h3{font-size:20px}.reward-slot-grid{grid-template-columns:1fr}.reward-slot-card{padding:14px}.reward-type-heading{margin-top:19px}}
+@media(max-width:600px){.reward-builder{padding:13px;margin-top:20px;border-radius:14px}.reward-builder-head h3{font-size:19px}.reward-slot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.reward-slot-card{padding:10px 9px;gap:7px}.reward-slot-top{align-items:flex-start;gap:5px;flex-wrap:wrap}.reward-slot-top b{font-size:11px}.reward-slot-card label{font-size:10px}.reward-slot-card input:not([type=checkbox]){padding:10px 8px;font-size:11px}.reward-slot-card .publish-toggle{font-size:10px;align-items:flex-start}.reward-slot-card .publish-toggle input{flex:0 0 15px;width:15px;height:15px}.reward-save{font-size:10px;padding:10px 6px;white-space:normal}.reward-type-heading{margin-top:19px}}
 
 
 /* Member reward cards and compact mobile forms */
