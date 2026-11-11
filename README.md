@@ -35,3 +35,22 @@ to that provider's official documentation. Only then set
 `AD_PROVIDER_NAME` and `AD_PROVIDER_WEBHOOK_SECRET` as Edge Function secrets.
 Never put a secret in Git or the browser. Do not use a provider that cannot
 cryptographically authenticate completion callbacks.
+
+## Current deployment configuration
+
+A Cloudflare Pages project named `watch-ads-earn` is connected to this repository.
+- Production branch: `main`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Supabase project URL and publishable key are configured as build-time environment variables in Cloudflare Pages.
+- Public site address: https://watch-ads-earn.pages.dev
+
+A Pages project being created does not mean the first deployment has completed. Confirm the first production deployment and test authentication before announcing the site as live.
+
+## Current feature status
+
+- Password reset email flow is included; configure the Supabase Auth Site URL and redirect allow-list for the final deployed domain.
+- Wallet, ledger, withdrawal request, admin review/refund, reward publishing, redeem-code inventory and redemption are implemented through database functions and RLS.
+- Referral signup attribution is recorded; referral bonuses remain disabled until qualifying activity and anti-fraud checks are implemented.
+- Earn offers remain unavailable until an incentivized ad provider approves the site and its signed callback format is integrated.
+- UPI payouts are manual: an admin must send the transfer outside the website before marking a request as paid.
