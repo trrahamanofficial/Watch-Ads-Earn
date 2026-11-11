@@ -151,3 +151,32 @@
   .referral-stats{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
   .referral-stats span{flex:1 0 108px}
 }
+
+
+/* Final shared dashboard surface rules: avoid white-filled panels on every signed-in page */
+.app-shell .admin-panel,.app-shell .admin-panel section,.app-shell .admin-panel article,
+.app-shell .data-list,.app-shell .reward-builder,.app-shell .member-reward-form,
+.app-shell .wallet-panel,.app-shell .wallet-summary,.app-shell .wallet-choice-card,
+.app-shell .member-reward-card,.app-shell .reward-slot-card,.app-shell .stat-card,
+.app-shell .feature-card,.app-shell .notice{
+  color:#f4eee5;
+}
+.app-shell input:not([type=checkbox]):not([type=radio]),
+.app-shell select,.app-shell textarea{
+  background:#0d0d0c!important;
+  color:#f7f1e7!important;
+  border:1px solid #594321!important;
+}
+.app-shell input::placeholder,.app-shell textarea::placeholder{color:#77716a!important}
+.app-shell .admin-panel .data-list,.app-shell .admin-panel .reward-builder,
+.app-shell .admin-panel .data-list article,.app-shell .admin-panel .data-list section{
+  background:#11100e!important;border-color:#49371f!important;
+}
+.app-shell .admin-panel button:not(.primary){
+  border-color:#8a5a1b;
+}
+@media(max-width:520px){
+ .app-shell .content{width:92%;margin-left:auto;margin-right:auto}
+ .app-shell .admin-panel .data-list,.app-shell .admin-panel .reward-builder{width:100%;max-width:100%}
+ .app-shell .admin-panel .data-row{align-items:flex-start;flex-wrap:wrap}
+}
