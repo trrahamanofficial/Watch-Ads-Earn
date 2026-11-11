@@ -101,3 +101,42 @@
 .wallet-choice-card small{color:#a49b90;font-size:11px;line-height:1.55;min-height:34px}
 .wallet-choice-link{display:flex;align-items:center;gap:6px;margin-top:auto;color:#ffb642;font-size:11px;font-weight:800}
 @media(max-width:520px){.wallet-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wallet-choice-card{min-height:176px;padding:14px 12px;border-radius:13px}.wallet-choice-card b{font-size:16px}.wallet-choice-card small{font-size:10px}}
+
+
+/* Unified dark + slim gold outline system across member and admin screens */
+:root{color-scheme:dark}
+.data-list,.reward-builder,.member-reward-form,.wallet-panel,.reward-slot-card,.member-reward-card,.stat-card,.feature-card,.wallet-choice-card,.withdraw-admin-row,.notice.info{
+  background:rgba(18,17,15,.72)!important;
+  box-shadow:none!important;
+}
+.data-list,.reward-builder,.member-reward-form,.wallet-panel,.reward-slot-card,.member-reward-card,.stat-card,.feature-card,.wallet-choice-card{
+  border-color:#49371f!important;
+}
+.data-list> b,.data-list>b{color:#f4eee5}
+.data-list input:not([type=checkbox]),.data-list select,.data-list textarea,
+.reward-slot-card input:not([type=checkbox]),.wallet-field input,
+.member-reward-form input,.member-reward-form select{
+  background:#0d0d0c!important;color:#f7f1e7!important;border:1px solid #594321!important;
+}
+.data-list input::placeholder,.wallet-field input::placeholder{color:#77716a}
+.data-row,.withdraw-admin-row{border-color:#30271d}
+.referral-code-box{background:transparent;border:1px solid #8a5a1b;border-radius:13px;padding:14px}
+.referral-code-box button,.referral-copy-link,.referral-share-link{
+  border:1px solid #a66b19;background:transparent;color:#ffc15b;border-radius:9px;
+  padding:10px 13px;font-weight:700;font-size:12px;white-space:nowrap;
+}
+.referral-link-label{display:block;margin:18px 0 8px;color:#d8c7ad;font-size:12px;font-weight:700}
+.referral-link-box{display:flex;align-items:center;gap:8px;width:100%;min-width:0;padding:8px;border:1px solid #8a5a1b;border-radius:12px;background:#100e0b}
+.referral-link-input{flex:1;min-width:0;width:100%;border:0!important;outline:0;background:transparent!important;color:#f4c36f!important;padding:10px 4px!important;font-size:12px!important;box-shadow:none!important}
+.referral-copy-link:active,.referral-share-link:active,.referral-code-box button:active{background:#3a2914}
+.referral-stats{display:flex;gap:9px;overflow-x:auto;padding:2px 1px 8px;scroll-snap-type:x proximity}
+.referral-stats span{flex:1 0 125px;background:transparent;border:1px solid #49371f;scroll-snap-align:start}
+@media(max-width:520px){
+ .data-list{padding:14px;border-radius:14px}
+ .referral-link-box{gap:6px;padding:6px}
+ .referral-link-input{font-size:10px!important;padding:9px 2px!important}
+ .referral-copy-link,.referral-share-link{padding:9px 8px;font-size:10px}
+ .referral-code-box{gap:8px}
+ .referral-code-box strong{font-size:17px;letter-spacing:1px}
+ .referral-stats span{flex-basis:112px}
+}
