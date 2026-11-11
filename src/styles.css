@@ -60,3 +60,32 @@
 .issued-code button,.text-button{border:1px solid #8b5c22;background:#21190f;color:#ffc15b;border-radius:8px;padding:9px 12px;font-size:11px;font-weight:800;flex-shrink:0}
 .text-button{margin-top:12px}
 @media(max-width:420px){.reward-choice-grid{gap:9px}.member-reward-card{padding:13px 10px;border-radius:12px}.member-reward-card h3{font-size:13px}.member-reward-card p{font-size:10px}.member-reward-action{font-size:11px;padding:10px 5px}.member-reward-form{padding:15px}.issued-code{align-items:flex-start;flex-direction:column}}
+
+/* Refined member wallet screen */
+.wallet-layout{width:min(100%,760px);margin:0 auto;display:grid;gap:18px}
+.wallet-summary{position:relative;overflow:hidden;display:flex;align-items:center;gap:18px;padding:24px;border:1px solid #63431f;border-radius:18px;background:radial-gradient(ellipse at 90% 15%,#b66a2028,transparent 42%),linear-gradient(125deg,#24190f,#15120f 72%);box-shadow:0 16px 38px #0003}
+.wallet-summary-icon,.wallet-panel-icon{width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center;border:1px solid #865b2a;border-radius:15px;background:#f5a62318;color:#ffb642}
+.wallet-summary h3{font:700 32px 'Space Grotesk';letter-spacing:-.04em;margin:5px 0 2px;color:#fff}
+.wallet-summary h3 small{font:600 12px 'DM Sans';letter-spacing:0;color:#c0b5a6}
+.wallet-summary p{font-size:12px;color:#a9a096;line-height:1.55;margin:4px 0 0}
+.wallet-summary-mark{margin-left:auto;color:#e9a23b;opacity:.75;flex:0 0 auto}
+.wallet-panel{padding:22px;border:1px solid #302a22;border-radius:18px;background:linear-gradient(150deg,#171614,#10100f);box-shadow:0 14px 35px #0003}
+.wallet-panel-heading{display:flex;align-items:flex-start;gap:13px;padding-bottom:18px;border-bottom:1px solid #302a22}
+.wallet-panel-icon{width:42px;height:42px;flex-basis:42px;border-radius:12px}
+.wallet-panel-heading h3{font:700 20px 'Space Grotesk';margin:5px 0 4px}
+.wallet-panel-heading p{font-size:12px;color:#a29b91;line-height:1.6;margin:0}
+.wallet-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.wallet-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wallet-field:first-child{grid-column:1/-1}
+.wallet-field label{display:block;color:#d5cec3;font-size:12px;font-weight:700}
+.wallet-field input{width:100%;min-width:0;display:block;padding:14px 15px;border:1px solid #3a352e;border-radius:11px;background:#0c0c0b;color:#f8f5ef;font-size:14px;outline:none;box-shadow:inset 0 1px 2px #0005}
+.wallet-field input::placeholder{color:#777169}
+.wallet-field input:focus{border-color:#d18a32;box-shadow:0 0 0 3px #e99b2d18}
+.wallet-form-foot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:5px}
+.wallet-form-foot>span{display:flex;align-items:center;gap:7px;color:#918a80;font-size:10px;line-height:1.5}
+.wallet-form-foot>span svg{color:#d79a43;flex:0 0 auto}
+.wallet-form-foot .primary{margin:0;padding:13px 17px;white-space:nowrap}
+.wallet-feedback{margin-top:14px;padding:12px 14px;border:1px solid #745021;border-radius:10px;background:#21190f;color:#ffc15b;font-size:12px;overflow-wrap:anywhere}
+.wallet-policy{display:flex;align-items:flex-start;gap:9px;margin-top:17px;padding:12px 13px;border:1px solid #30291f;border-radius:10px;background:#14120f;color:#a39a8d;font-size:11px;line-height:1.6}
+.wallet-policy svg{color:#d99a3d;flex:0 0 auto;margin-top:1px}
+@media(max-width:520px){.wallet-layout{gap:13px}.wallet-summary{padding:18px;gap:13px;border-radius:15px}.wallet-summary-icon{width:46px;height:46px;flex-basis:46px;border-radius:13px}.wallet-summary h3{font-size:28px}.wallet-summary p{font-size:11px;max-width:250px}.wallet-summary-mark{display:none}.wallet-panel{padding:17px;border-radius:15px}.wallet-panel-heading h3{font-size:18px}.wallet-form{grid-template-columns:1fr;gap:13px;margin-top:17px}.wallet-field:first-child{grid-column:auto}.wallet-field input{padding:14px}.wallet-form-foot{grid-column:auto;flex-direction:column;align-items:stretch}.wallet-form-foot .primary{width:100%;padding:15px}.wallet-form-foot>span{font-size:10px}}
