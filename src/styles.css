@@ -140,3 +140,14 @@
  .referral-code-box strong{font-size:17px;letter-spacing:1px}
  .referral-stats span{flex-basis:112px}
 }
+
+
+/* Mobile width correction: prevent nested empty-state padding from shrinking cards */
+.empty-state{width:100%;min-width:0}
+.empty-state>.data-list{width:100%;max-width:720px;min-width:0}
+@media(max-width:850px){
+  .empty-state{padding:30px 0}
+  .empty-state>.data-list{width:100%;max-width:100%}
+  .referral-stats{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+  .referral-stats span{flex:1 0 108px}
+}
