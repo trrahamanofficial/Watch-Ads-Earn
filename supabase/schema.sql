@@ -321,3 +321,17 @@ drop policy if exists "admin referrals read" on public.referrals;
 drop policy if exists "admin reward catalog read" on public.reward_catalog;
 drop policy if exists "admin wallets read" on public.wallets;
 drop policy if exists "admin withdrawals read" on public.withdrawal_requests;
+
+
+-- Admin-only user directory for the dashboard.
+create or replace function public.admin_list_users(p_limit integer default 100)
+returns table(user_id uuid, email text, display_name text, role text, balance bigint, lifetime_earned bigint, joined_at timestamptz)
+language plpgsql security definer set search_path=''
+as $$
+begin
+ if not public.is_current_user_admin() then raise exception 'Admin access required'; end if;
+ return query select u.id,u.email::text,p.display_name,p.role,coalesce(w.balance,0)::bigint,coalesce(w.lifetime_earned,0)::bigint,u.created_at from auth.users u left join public.profiles p on p.id=u.id left join public.wallets w on w.user_id=u.id order by u.created_at desc limit greatest(1,least(coalesce(p_limit,100),200));
+end;
+$$;
+revoke all on function public.admin_list_users(integer) from public,anon;
+grant execute on function public.admin_list_users(integer) to authenticated;
