@@ -314,3 +314,10 @@ create index if not exists referrals_referrer_id_idx on public.referrals(referre
 create index if not exists reward_code_inventory_claimed_by_idx on public.reward_code_inventory(claimed_by);
 create index if not exists reward_ledger_user_id_idx on public.reward_ledger(user_id);
 create index if not exists withdrawal_requests_user_id_idx on public.withdrawal_requests(user_id);
+
+-- Remove earlier duplicate admin read policies while preserving admin-only visibility.
+drop policy if exists "admin redemptions read" on public.redemptions;
+drop policy if exists "admin referrals read" on public.referrals;
+drop policy if exists "admin reward catalog read" on public.reward_catalog;
+drop policy if exists "admin wallets read" on public.wallets;
+drop policy if exists "admin withdrawals read" on public.withdrawal_requests;
