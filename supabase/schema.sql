@@ -277,3 +277,24 @@ end;
 $$;
 revoke all on function public.admin_update_reward(uuid,text,text,bigint,text,boolean) from public,anon;
 grant execute on function public.admin_update_reward(uuid,text,text,bigint,text,boolean) to authenticated;
+
+
+-- Admin-only stock summary. Actual unused codes are never exposed to the client.
+create or replace function public.admin_reward_stock_summary()
+returns table(reward_id uuid,total_codes bigint,available_codes bigint,claimed_codes bigint)
+language plpgsql security definer set search_path=''
+as $$
+begin
+ if not public.is_current_user_admin() then raise exception 'Admin access required'; end if;
+ return query
+ select r.id,count(i.id)::bigint,
+        count(i.id) filter(where i.claimed_by is null)::bigint,
+        count(i.id) filter(where i.claimed_by is not null)::bigint
+ from public.reward_catalog r
+ left join public.reward_code_inventory i on i.reward_id=r.id
+ where r.reward_type='redeem_code'
+ group by r.id;
+end;
+$$;
+revoke all on function public.admin_reward_stock_summary() from public,anon;
+grant execute on function public.admin_reward_stock_summary() to authenticated;
